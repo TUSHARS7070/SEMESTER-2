@@ -145,9 +145,6 @@ int main() {
                     struct PerfumeNode* newPerfume = newPerfumeNode(id, brand, quantity, price);
 
                     // Add the new perfume to the inventory
-                    // (you may want to implement insertion logic based on ID)
-                    // For simplicity, it is inserted as a binary search tree
-                    // where left child has a smaller ID and right child has a larger ID.
                     if (inventoryRoot == NULL)
                         inventoryRoot = newPerfume;
                     else {
