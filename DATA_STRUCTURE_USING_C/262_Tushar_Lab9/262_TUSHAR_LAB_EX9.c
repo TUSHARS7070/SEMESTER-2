@@ -55,16 +55,44 @@ void DFT(struct PerfumeNode* root) {
     DFT(root->right);
 }
 
-// Function to search for a perfume by ID in the inventory
-struct PerfumeNode* searchPerfume(struct PerfumeNode* root, int perfumeID) {
+// Function to search for a perfume by ID using Breadth-First Traversal (BFT)
+struct PerfumeNode* searchPerfumeBFT(struct PerfumeNode* root, int perfumeID) {
+    if (root == NULL)
+        return NULL;
+
+    // Create a queue for BFT search
+    struct PerfumeNode* queue[100];
+    int front = -1, rear = -1;
+    queue[++rear] = root;
+
+    while (front != rear) {
+        struct PerfumeNode* current = queue[++front];
+
+        if (current->perfumeID == perfumeID)
+            return current;
+
+        if (current->left != NULL)
+            queue[++rear] = current->left;
+
+        if (current->right != NULL)
+            queue[++rear] = current->right;
+    }
+
+    return NULL;
+}
+
+// Function to search for a perfume by ID using Depth-First Traversal (DFT)
+struct PerfumeNode* searchPerfumeDFT(struct PerfumeNode* root, int perfumeID) {
     if (root == NULL || root->perfumeID == perfumeID)
         return root;
 
-    // Recur for the left and right subtrees
-    if (perfumeID < root->perfumeID)
-        return searchPerfume(root->left, perfumeID);
-    else
-        return searchPerfume(root->right, perfumeID);
+    // Check the left subtree
+    struct PerfumeNode* leftResult = searchPerfumeDFT(root->left, perfumeID);
+    if (leftResult != NULL)
+        return leftResult;
+
+    // Check the right subtree
+    return searchPerfumeDFT(root->right, perfumeID);
 }
 
 // Function to display all perfumes in the inventory
@@ -84,8 +112,9 @@ void displayMenu() {
     printf("2. Display Perfume Inventory (BFT)\n");
     printf("3. Display Perfume Inventory (DFT)\n");
     printf("4. Display All Perfumes\n");
-    printf("5. Search Perfume by ID\n");
-    printf("6. Exit\n");
+    printf("5. Search Perfume by ID (BFT)\n");
+    printf("6. Search Perfume by ID (DFT)\n");
+    printf("7. Exit\n");
     printf("Enter your choice: ");
 }
 
@@ -162,9 +191,9 @@ int main() {
             case 5:
                 {
                     int searchID;
-                    printf("Enter Perfume ID to search: ");
+                    printf("Enter Perfume ID to search using BFT: ");
                     scanf("%d", &searchID);
-                    struct PerfumeNode* result = searchPerfume(inventoryRoot, searchID);
+                    struct PerfumeNode* result = searchPerfumeBFT(inventoryRoot, searchID);
                     if (result != NULL)
                         printf("Perfume found in inventory - ID:%d Brand:%s Quantity:%d Price:%.2f\n", result->perfumeID, result->brand, result->quantity, result->price);
                     else
@@ -173,6 +202,19 @@ int main() {
                 break;
 
             case 6:
+                {
+                    int searchID;
+                    printf("Enter Perfume ID to search using DFT: ");
+                    scanf("%d", &searchID);
+                    struct PerfumeNode* result = searchPerfumeDFT(inventoryRoot, searchID);
+                    if (result != NULL)
+                        printf("Perfume found in inventory - ID:%d Brand:%s Quantity:%d Price:%.2f\n", result->perfumeID, result->brand, result->quantity, result->price);
+                    else
+                        printf("Perfume with ID %d not found in the inventory.\n", searchID);
+                }
+                break;
+
+            case 7:
                 printf("Exiting the program.\n");
                 break;
 
@@ -180,7 +222,7 @@ int main() {
                 printf("Invalid choice. Please enter a valid option.\n");
         }
 
-    } while (choice != 6);
+    } while (choice != 7);
 
     return 0;
 }
